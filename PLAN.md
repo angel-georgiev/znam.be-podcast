@@ -118,6 +118,27 @@ explicit: false
 6. **Submit** — Apple Podcasts Connect, Spotify for Creators, Podcast Index (which feeds many smaller apps), YouTube Music/others as desired. Add the resulting subscribe links to the homepage.
 7. **Optional** — download stats (static hosting gives none; OP3 is a free, open prefix-based analytics service), transcripts (`podcast:transcript`), chapters.
 
+## Migration from SoundCloud
+
+Source: https://soundcloud.com/znambe, feed
+`https://feeds.soundcloud.com/users/soundcloud:users:772017865/sounds.rss`.
+
+`scripts/import_soundcloud.py` has imported the metadata. It produced 160 items (2020-01 → 2022-07): 71 "Епизод", 70 "Практика", 19 other.
+Each one became an `_episodes/*.md` file with its SoundCloud GUID preserved. Show metadata is in `_data/show.json`, and all artwork (3000×3000 per episode) is in `assets/`.
+An archived copy of the original feed is in `sources/`.
+
+What's left:
+
+- **Audio:** 9.38 GB in total, served by SoundCloud as 320 kbps mono MP3s, which is far more than speech needs.
+  - Option A: copy the files as-is. No quality loss, the 10 GB R2 free tier is almost full, and costs remain negligible (~$0.015/GB-month).
+  - Option B: re-encode to 96 kbps mono. About 2.8 GB total, and smaller downloads for listeners.
+  - The copy step (download from `source_audio_url`, upload to R2 as `audio_file`) needs an R2 API token. It runs either in a cloud session with the token stored as an environment secret, or locally.
+- **Show cover is 1000×1000.** Apple requires at least 1400×1400, so a new cover image is needed (3000×3000 ideal).
+- **Moving subscribers:** the old feed is likely already listed in Apple Podcasts and Spotify. To move listeners over without them noticing:
+  1. Publish the new feed with the same GUIDs (done in the data), plus `<itunes:new-feed-url>`.
+  2. Make the old feed URL redirect (301) to `https://podcast.znam.be/feed.xml`. SoundCloud's own setting for this (if it still exists) needs to be checked in the account. Without a redirect, update the feed URL manually in Apple Podcasts Connect and Spotify for Creators.
+  3. Keep the SoundCloud tracks online until the directories show the new feed.
+
 ## Content intake
 
 Show metadata, artwork and episodes will come from a folder the owner is assembling.

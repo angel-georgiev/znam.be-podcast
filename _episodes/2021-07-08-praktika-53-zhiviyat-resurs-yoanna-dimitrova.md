@@ -1,0 +1,16 @@
+---
+title: "Практика #53 Живият ресурс Йоанна Димитрова"
+date: "2021-07-08T08:00:41+00:00"
+guid: "tag:soundcloud,2010:tracks/1083695527"
+kind: "practice"
+number: 53
+audio_file: "praktika-53-zhiviyat-resurs-yoanna-dimitrova.mp3"
+audio_bytes: 12405828
+audio_type: "audio/mpeg"
+duration: "00:05:09"
+explicit: false
+image: "/assets/episodes/praktika-53-zhiviyat-resurs-yoanna-dimitrova.jpg"
+description: "Това е специфичната практика, която Йоанна Димитрова сподели в своя епизод. Пълния епизод може да чуете тук: https://soundcloud.com/znambe/epizod-53-zhiviyat-resurs-yoanna-dimitrova\n\nТози епизод си говорим за ресурсите, тези живите, които влизат в класната ни стая, мотивират децата ни и се вдъхновяват да станат учители някой ден. Това е Йоанна, чуйте повече за нейния път.\n\nЙоанна Димитрова е учител по История, География и Философия в ОбУ,, Св.Св. Кирил И Методии’’ с. Ръжена от 2018 година. За един от големите си успехи приема проекта си да кани различни ролеви модели в класната стая. Така с децата са имали гости от различни краища на света - България, Франция, САЩ, Виетнам и с какви ли не професии - пожарникар, пилот, военен, програмист, илюзионист и дори представители на различни малки и средни бизнеси. Тези срещи са помогнали на децата да си представят колко пъстър е света и колко много пътища има пред тях и така да развият редица умения - работа в екип, комуникационни умения, личностно развитие.\n\nТози подкаст е проект на znam.be, записан благодарение на www.vivacom.bg. Продукция на www.procasters.co. Благодарим на фондация \"Заедно в час\" за подготовката. Използвана музика: Gold Coast by Scandinavianz | @scandinavianz, предоставена от www.free-stock-music.com. CC BY-SA 4.0"
+source_url: "https://soundcloud.com/znambe/praktika-53-zhiviyat-resurs-yoanna-dimitrova"
+source_audio_url: "https://feeds.soundcloud.com/stream/1083695527-znambe-praktika-53-zhiviyat-resurs-yoanna-dimitrova.mp3"
+---

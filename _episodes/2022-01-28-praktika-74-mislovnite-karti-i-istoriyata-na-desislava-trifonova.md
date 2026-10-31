@@ -1,0 +1,16 @@
+---
+title: "Практика #74 Мисловните карти и историята на Десислава Трифонова"
+date: "2022-01-28T07:59:38+00:00"
+guid: "tag:soundcloud,2010:tracks/1205241355"
+kind: "practice"
+number: 74
+audio_file: "praktika-74-mislovnite-karti-i-istoriyata-na-desislava-trifonova.mp3"
+audio_bytes: 13067512
+audio_type: "audio/mpeg"
+duration: "00:05:26"
+explicit: false
+image: "/assets/episodes/praktika-74-mislovnite-karti-i-istoriyata-na-desislava-trifonova.jpg"
+description: "Това е специфичната практика, която Десислава Трифонова сподели в своя епизод. Пълния епизод може да чуете тук: https://soundcloud.com/znambe/epizod-74-mislovnite-karti-i-istoriyata-na-desislava-trifonova\n\nДеси е истински пионер в своя град Търговище. Не само, че пробва нови инструменти със своите ученици, тя ги показва на своите колеги и им помага да ги използват. Какви са тези инструменти, чуйте в този епизод!\n\nДесислава Трифонова е учител по история и цивилизации във Второ средно училище \"Професор Никола Маринов\", град Търговище. Има 4 години опит в системата на образованието. Един от най-големите ѝ успехи в професионален план е наградата на Teaching Alpha, която печели благодарение на гласовете на учениците си и техните родители. В училище и извън него госпожа Трифонова е млад, амбициозен и пълен с идеи за промяна човек, за когато е важно да покаже, че с новаторски методи, добра семейна среда и излизане от стереотипа на преподаване ще върне интереса към училището.\nВ личен план, горда майка на прекрасна госпожица.\n\nИнструмент за мисловни карти, който споделихме в този епизод: https://coggle.it/\n\nВ този сезон включваме нова рубрика: Минутите на \"Ученици за промяна\". Това е група млади хора, които заедно искат да променят и демократизират образованието. Повече за тях може да научите тук: fb.me/Uchenici.promiana\n\nТози подкаст е проект на znam.be, записан благодарение на www.vivacom.bg. Продукция на www.procasters.co. Използвана музика: Gold Coast by Scandinavianz | @scandinavianz, предоставена от www.free-stock-music.com. CC BY-SA 4.0"
+source_url: "https://soundcloud.com/znambe/praktika-74-mislovnite-karti-i-istoriyata-na-desislava-trifonova"
+source_audio_url: "https://feeds.soundcloud.com/stream/1205241355-znambe-praktika-74-mislovnite-karti-i-istoriyata-na-desislava-trifonova.mp3"
+---
