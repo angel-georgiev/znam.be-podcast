@@ -10,7 +10,7 @@ Goal: a static, low-cost setup that
 
 `znam.be` DNS is on Cloudflare, so everything runs on Cloudflare:
 
-- **Site + RSS feed + images → Cloudflare Pages** (built from this repo), at `podcast.znam.be` (TBD).
+- **Site + RSS feed + images → Cloudflare Pages** (built from this repo), at `podcast.znam.be`.
 - **Audio → Cloudflare R2**, behind a custom domain, e.g. `media.znam.be`.
 
 Why not put the site in R2 too: an R2 bucket is a plain file store. It does not serve
@@ -118,9 +118,16 @@ explicit: false
 6. **Submit** — Apple Podcasts Connect, Spotify for Creators, Podcast Index (which feeds many smaller apps), YouTube Music/others as desired. Add the resulting subscribe links to the homepage.
 7. **Optional** — download stats (static hosting gives none; OP3 is a free, open prefix-based analytics service), transcripts (`podcast:transcript`), chapters.
 
-## Open decisions
+## Content intake
 
-- Domain: `znam.be` itself or a subdomain like `podcast.znam.be`? (DNS is on Cloudflare.)
+Show metadata, artwork and episodes will come from a folder the owner is assembling.
+Useful per episode: the audio file (preferably the final master, WAV or high-bitrate MP3 so
+we control the encode), title, number, publish date, description/show notes, optional
+artwork. For the show: title, description, author, owner email, language, Apple category,
+explicit flag, and cover art (square, ideally 3000×3000).
+
+## Open decisions (answered by the content folder)
+
 - Language of the show and site (Bulgarian, English, both)? Sets `<language>` and UI text.
 - Expected length and cadence of episodes (drives the storage math above).
 - Show metadata: title, description, author name, owner email for the feed, Apple category.
