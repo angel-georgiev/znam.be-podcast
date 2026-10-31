@@ -6,6 +6,24 @@ Goal: a static, low-cost setup that
 2. serves a homepage where visitors can browse and play episodes,
 3. publishes an RSS feed that Apple Podcasts, Spotify, Pocket Casts, etc. can subscribe to.
 
+## Decision (updated)
+
+`znam.be` DNS is on Cloudflare, so everything runs on Cloudflare:
+
+- **Site + RSS feed + images → Cloudflare Pages** (built from this repo), at `podcast.znam.be` (TBD).
+- **Audio → Cloudflare R2**, behind a custom domain, e.g. `media.znam.be`.
+
+Why not put the site in R2 too: an R2 bucket is a plain file store. It does not serve
+`index.html` for `/` or `/episodes/foo/`, so the site's pages would 404 unless we add
+URL-rewrite rules or a Worker in front. It also gives no build step, preview deploys or
+`_redirects`/`_headers` files. Cloudflare Pages provides all of that for free. Pages caps
+single files at 25 MiB, which is why audio goes to R2.
+
+Cloudflare has been steering new projects from Pages toward Workers with static assets.
+Either works for this; we'll pick whichever the dashboard currently recommends when we set it up.
+
+The GitHub Pages analysis below is kept for reference.
+
 ## Short answer: can this be static on GitHub Pages?
 
 **The website and the RSS feed: yes.** An RSS feed is just an XML file; nothing about podcasting needs a server.
@@ -34,7 +52,7 @@ Podcast apps also auto-download every new episode for every subscriber, so bandw
 
 ## Feed URL — the one decision that is hard to undo
 
-Once directories have the feed, the feed URL is effectively permanent. Moving it later requires an HTTP 301 redirect plus `<itunes:new-feed-url>`, and **GitHub Pages cannot issue 301 redirects**. So:
+Once directories have the feed, the feed URL is effectively permanent. Moving it later requires an HTTP 301 redirect plus `<itunes:new-feed-url>`. GitHub Pages alone cannot issue 301s. Cloudflare can, through Pages `_redirects` or Redirect Rules, which is another reason to serve everything through Cloudflare. Still:
 
 - Serve the site on a domain we control from day one, e.g. `podcast.znam.be` or `znam.be`, not `angel-georgiev.github.io/...`.
 - Feed lives at a stable path, e.g. `https://podcast.znam.be/feed.xml`, and never moves.
@@ -54,8 +72,13 @@ repo (main branch)
 ├── _layouts/episode.html      # episode page: artwork, <audio> player, show notes
 ├── feed.xml                   # RSS 2.0 + iTunes/Podcasting 2.0 namespaces, generated from _episodes
 ├── scripts/add-episode        # reads an MP3, fills in duration + byte size, uploads, creates the .md stub
-└── .github/workflows/pages.yml # build + validate feed + deploy to Pages
+├── _headers                   # Cloudflare Pages: Content-Type + short cache for feed.xml
+└── .github/workflows/ci.yml   # validate feed + check audio URLs (Cloudflare Pages does the build/deploy)
 ```
+
+Audio files are not in the repo. `scripts/add-episode` uploads them to R2 (via `wrangler` or the S3-compatible API) with `Content-Type: audio/mpeg`.
+
+**Caching:** Cloudflare caches at the edge. `feed.xml` needs a short `Cache-Control` (e.g. 5–15 min) so apps see new episodes quickly. Audio files never change once published (new edit = new filename), so they can be cached for a long time.
 
 **Generator:** Jekyll. GitHub Pages supports it natively, episodes are just Markdown files with front matter, and the feed is a Liquid template over the same data the homepage uses — one source of truth. (Eleventy or Astro would also work; they'd need an Actions build, which we'll have anyway, so this is a preference, not a constraint.)
 
@@ -87,9 +110,9 @@ explicit: false
 
 ## Delivery phases
 
-1. **Skeleton** — Jekyll site, `_config.yml`, layouts, empty feed, Actions workflow deploying to Pages. Placeholder episode to exercise everything.
-2. **Domain** — add `CNAME`, DNS records for the site (and `media.` if using R2), enforce HTTPS.
-3. **Audio storage** — set up R2 bucket + custom domain (or decide to start in-repo).
+1. **Skeleton** — Jekyll site, `_config.yml`, layouts, empty feed. Placeholder episode to exercise everything.
+2. **Cloudflare Pages** — connect this repo, set build command `jekyll build`, attach `podcast.znam.be`.
+3. **Audio storage** — R2 bucket + custom domain `media.znam.be`; API token for uploads.
 4. **Tooling** — `scripts/add-episode`; CI step that validates the feed XML and checks each `audio_url` returns 200 with the declared size.
 5. **Content** — real artwork, show description, first episode(s). Validate with a feed validator (e.g. Podbase or Cast Feed Validator).
 6. **Submit** — Apple Podcasts Connect, Spotify for Creators, Podcast Index (which feeds many smaller apps), YouTube Music/others as desired. Add the resulting subscribe links to the homepage.
@@ -97,8 +120,7 @@ explicit: false
 
 ## Open decisions
 
-- Domain: `znam.be` itself or a subdomain like `podcast.znam.be`? Where is DNS hosted?
-- Audio storage: R2 now, or in-repo to start?
+- Domain: `znam.be` itself or a subdomain like `podcast.znam.be`? (DNS is on Cloudflare.)
 - Language of the show and site (Bulgarian, English, both)? Sets `<language>` and UI text.
 - Expected length and cadence of episodes (drives the storage math above).
 - Show metadata: title, description, author name, owner email for the feed, Apple category.
