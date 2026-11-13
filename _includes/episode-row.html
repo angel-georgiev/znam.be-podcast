@@ -1,0 +1,14 @@
+{%- assign ep = include.ep -%}
+<li class="episode-row">
+  <a href="{{ ep.url | relative_url }}">
+    <img src="{{ ep.image | default: site.cover | relative_url }}" alt="" width="72" height="72" loading="lazy">
+    <span class="row-text">
+      <span class="row-meta">
+        {%- if ep.number %}<span class="num">#{{ ep.number }}</span> · {% endif -%}
+        {{ ep.date | date: "%d.%m.%Y" }} · {{ ep.duration_label }}
+        {%- if ep.practice %} · <span class="tag">+ практика</span>{% endif -%}
+      </span>
+      <span class="row-title">{{ ep.short_title }}</span>
+    </span>
+  </a>
+</li>

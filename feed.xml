@@ -1,0 +1,60 @@
+---
+layout: null
+---
+{%- assign show = site.data.show -%}
+{%- assign items = site.episodes | sort: "date" | reverse -%}
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
+     xmlns:podcast="https://podcastindex.org/namespace/1.0"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>{{ show.title | xml_escape }}</title>
+    <link>{{ '/' | absolute_url }}</link>
+    <atom:link href="{{ '/feed.xml' | absolute_url }}" rel="self" type="application/rss+xml"/>
+    <description>{{ show.description | xml_escape }}</description>
+    <language>{{ show.language }}</language>
+    <copyright>{{ show.copyright | xml_escape }}</copyright>
+    <lastBuildDate>{{ site.time | date_to_rfc822 }}</lastBuildDate>
+    <itunes:author>{{ show.author | xml_escape }}</itunes:author>
+    <itunes:owner>
+      <itunes:name>{{ show.owner_name | xml_escape }}</itunes:name>
+      <itunes:email>{{ show.owner_email }}</itunes:email>
+    </itunes:owner>
+    <itunes:image href="{{ site.feed_cover | absolute_url }}"/>
+    <image>
+      <url>{{ site.feed_cover | absolute_url }}</url>
+      <title>{{ show.title | xml_escape }}</title>
+      <link>{{ '/' | absolute_url }}</link>
+    </image>
+    {%- for c in show.categories %}
+    <itunes:category text="{{ c | xml_escape }}"/>
+    {%- endfor %}
+    <itunes:explicit>{{ show.explicit }}</itunes:explicit>
+    <itunes:type>episodic</itunes:type>
+    <podcast:guid>{{ site.podcast_guid }}</podcast:guid>
+    <podcast:locked owner="{{ show.owner_email }}">yes</podcast:locked>
+    {%- for ep in items %}
+    <item>
+      <title>{{ ep.title | xml_escape }}</title>
+      <itunes:title>{{ ep.short_title | xml_escape }}</itunes:title>
+      <guid isPermaLink="false">{{ ep.guid | xml_escape }}</guid>
+      <link>{{ ep.url | absolute_url }}</link>
+      <pubDate>{{ ep.date | date_to_rfc822 }}</pubDate>
+      <description><![CDATA[{{ ep.content | strip }}]]></description>
+      <content:encoded><![CDATA[{{ ep.content | strip }}]]></content:encoded>
+      <enclosure url="{{ site.media_base }}{{ ep.audio_file }}" length="{{ ep.audio_bytes }}" type="audio/mpeg"/>
+      <itunes:duration>{{ ep.duration }}</itunes:duration>
+      <itunes:episodeType>{{ ep.episode_type }}</itunes:episodeType>
+      {%- if ep.number %}
+      <itunes:episode>{{ ep.number }}</itunes:episode>
+      {%- endif %}
+      <itunes:explicit>false</itunes:explicit>
+      {%- if ep.image %}
+      <itunes:image href="{{ ep.image | absolute_url }}"/>
+      {%- endif %}
+    </item>
+    {%- endfor %}
+  </channel>
+</rss>
