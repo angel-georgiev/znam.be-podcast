@@ -10,30 +10,17 @@ Goal: move the podcast off SoundCloud to a static setup we control:
 
 | Piece | Where | URL |
 |---|---|---|
-| Website, RSS feed, artwork | Cloudflare Pages, built from this repo (Jekyll) | `https://podcast.znam.be/` |
-| Audio (MP3) | Cloudflare R2 bucket `znambe-podcast` | `https://media.znam.be/episodes/<slug>.mp3` |
+| Website, RSS feed, artwork | GitHub Pages, built by GitHub from `main` (Jekyll, `github-pages` gem) | `https://podcast.znam.be/` |
+| Audio (MP3) | Cloudflare R2 bucket `znambe-podcast` | `https://media.znam.be/episodes/<file>.mp3` |
 
-Notes on these choices:
-
-- **Why not R2 for the site too:** R2 is a plain file store. It doesn't serve `index.html` for `/` or `/episodes/x/`, and it has no build step, previews or redirects. Pages does all of that.
-- **Why audio isn't on Pages:** Pages caps files at 25 MiB, and many episodes are around 100 MB.
-- **Why audio lives on our own subdomain:** published audio URLs stay valid even if storage changes later.
-- **Why GitHub Pages was rejected:** 1 GB site limit, 100 GB/month bandwidth, 100 MB per file, and it can't do 301 redirects.
-
-### Deploy flow
-
-- Cloudflare Pages is connected to this GitHub repo. Production branch: `main`.
-- Every push to another branch gets a preview URL. The working branch is `claude/determined-ramanujan-njeyay`.
-- Going live = merging into `main`. The repo owner decides when.
-- Pages build settings:
-  - Framework preset: Jekyll
-  - Build command: `bundle exec jekyll build`
-  - Output directory: `_site`
-
-### Caching
-
-- `feed.xml`: short `Cache-Control` (~10 min, via `_headers`) so new episodes reach apps quickly.
-- Audio: never changes once published (a re-edit gets a new filename), so it is cached for a long time.
+- **Site and feed: GitHub Pages.** Classic "deploy from branch" (`main`, root), with `CNAME` = `podcast.znam.be`. The site is ~55 MB, far inside Pages limits.
+- **Audio: R2.** It is too big for Pages: 9.38 GB, files up to ~140 MB, and every subscriber's app downloads every episode.
+- **DNS in Cloudflare:**
+  - `podcast` CNAME → `angel-georgiev.github.io`, set to **DNS only** (grey cloud) so GitHub can issue the HTTPS certificate.
+  - `media` is attached to the R2 bucket.
+- **Redirects:** if the feed ever has to move, Cloudflare Redirect Rules can 301 it (requires proxying `podcast`).
+- **Caching:** GitHub Pages sends `Cache-Control: max-age=600`, so feed updates reach apps within ~10 min.
+- **Local preview:** `bundle install && bundle exec jekyll serve`. Set `LANG=C.UTF-8` if Sass complains about encoding.
 
 ## Content (migrated from SoundCloud)
 
@@ -60,7 +47,7 @@ One file per episode in `_episodes/`. The matching Практика clip is nest
 title: "Епизод #85 Как да не ставаме англичани с Моника Стефанова"
 date: "2022-07-14T06:12:38+00:00"
 guid: "tag:soundcloud,2010:tracks/1304918038"   # kept from SoundCloud — never change
-type: "full"                                      # full | bonus | trailer
+episode_type: "full"                              # full | bonus | trailer
 number: 85
 audio_file: "epizod-85-....mp3"
 audio_bytes: 98992953
@@ -100,35 +87,24 @@ Show-level metadata is in `_data/show.json`: title, description, language `bg`, 
 - Per item: original `guid`, `pubDate`, `enclosure` (url/length/type), `itunes:duration`, `itunes:episode`, `itunes:episodeType`, description, `itunes:image`.
 - CI validates the feed XML and checks that every enclosure URL returns 200 with the declared byte size.
 
-## What's needed from Cloudflare (owner does these once)
+## Setup checklist (owner)
 
-1. **R2 bucket** named `znambe-podcast`.
-   - Bucket → Settings → Custom Domains → add `media.znam.be`.
-   - Leave the `r2.dev` URL disabled.
-2. **API token** for uploading audio.
-   - My Profile → API Tokens → Create Custom Token.
-   - Permission: Account → Workers R2 Storage → Edit. Scope: the znam.be account.
-3. **Put credentials in the Claude cloud environment, never in chat or the repo.**
-   - Session title bar → environment → Edit → Network secrets (or environment variables).
-   - Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
-   - Only sessions started after this change see them.
-4. **Cloudflare Pages project.**
-   - Workers & Pages → Create → Pages → Connect to Git → `angel-georgiev/znam.be-podcast`.
-   - Production branch `main`; build settings as above.
-   - Custom domain `podcast.znam.be`.
-   - This can be done before or after the site code exists. If done before, the first build will just fail harmlessly.
-
-Claude does not need a Cloudflare dashboard login. Pages builds from GitHub; audio uploads use the token from step 2 via `wrangler` (`api.cloudflare.com` is reachable from the session).
+- [x] R2 bucket `znambe-podcast` with custom domain `media.znam.be` (verified: range requests return 206).
+- [x] Cloudflare API token with R2 edit. **Roll it after the migration**, since it was shared in chat.
+- [ ] GitHub repo → Settings → Pages → Source: *Deploy from a branch*, branch `main`, folder `/ (root)`.
+- [ ] Cloudflare DNS: `podcast` CNAME `angel-georgiev.github.io`, DNS only.
+- [ ] GitHub → Settings → Pages: custom domain `podcast.znam.be` (read from `CNAME`), then tick *Enforce HTTPS* once the certificate exists.
+- [ ] Optional: delete the unused Cloudflare Pages project / GitHub app connection.
 
 ## Phases
 
 1. **Data:** restructure `_episodes/` into the 85 + 4 + 1 model above, nesting the Практика clips. Create the 1400×1400 feed cover.
-2. **Site:** Jekyll layouts, homepage, episode pages, `feed.xml`, `_headers`, Gemfile.
+2. **Site:** Jekyll layouts, homepage, episode pages, `feed.xml`, Gemfile.
 3. **CI:** a GitHub Actions workflow that builds the site, validates the feed and checks audio URLs.
 4. **Audio copy:** `scripts/copy_audio_to_r2` streams each MP3 from SoundCloud to R2, one file at a time.
    - It skips files already uploaded with the right size, so it can resume after interruptions.
    - It verifies sizes after uploading.
-5. **Preview:** check the Pages preview URL and run the feed through a validator (e.g. Podbase / Cast Feed Validator).
+5. **Preview:** check locally / on GitHub Pages and run the feed through a validator (e.g. Podbase / Cast Feed Validator).
 6. **Go live:** merge to `main`.
    - Point the old SoundCloud feed at the new one: SoundCloud redirect setting if available, otherwise update the feed URL in Apple Podcasts Connect and Spotify for Creators. Then add `<itunes:new-feed-url>`.
    - Submit to Podcast Index.
@@ -137,6 +113,4 @@ Claude does not need a Cloudflare dashboard login. Pages builds from GitHub; aud
 
 ## Unverified assumptions
 
-- The Cloudflare Pages build image runs Jekyll from a Gemfile without extra config.
-- Cloudflare Pages reports build status back to GitHub commits, so preview results are visible without dashboard access.
 - SoundCloud still offers a feed-redirect setting.

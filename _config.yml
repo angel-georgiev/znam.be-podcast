@@ -1,0 +1,32 @@
+# Site settings. Show metadata (title, description, owner, category) lives in _data/show.json.
+url: "https://podcast.znam.be"
+baseurl: ""
+lang: bg
+timezone: Europe/Sofia
+theme: null   # no GitHub Pages default theme; layouts are our own
+
+# Audio lives in Cloudflare R2, served from our own subdomain.
+media_base: "https://media.znam.be/episodes/"
+# podcast:guid = UUIDv5(podcastindex namespace, "podcast.znam.be/feed.xml")
+podcast_guid: "eadf88e5-02b5-50f7-a9d5-5a3c66b3433c"
+cover: /assets/cover.jpg
+feed_cover: /assets/cover-1400.jpg   # Apple requires >= 1400x1400
+
+collections:
+  episodes:
+    output: true
+    permalink: /episodes/:name/
+
+defaults:
+  - scope: { type: episodes }
+    values: { layout: episode }
+
+exclude:
+  - sources
+  - scripts
+  - PLAN.md
+  - README.md
+  - LICENSE
+  - Gemfile
+  - Gemfile.lock
+  - vendor

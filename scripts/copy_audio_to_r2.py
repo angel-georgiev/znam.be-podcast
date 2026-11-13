@@ -39,7 +39,7 @@ def front_matter(path: pathlib.Path) -> dict:
 
 
 def jobs():
-    for f in sorted((ROOT / "_episodes").glob("*.md")):
+    for f in sorted((ROOT / "_episodes").glob("*.html")):
         fm = front_matter(f)
         for item in (fm, fm.get("practice")):
             if item and item.get("source_audio_url"):

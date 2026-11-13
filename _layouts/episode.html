@@ -1,0 +1,48 @@
+---
+layout: default
+---
+{%- assign ep = page -%}
+<article class="episode">
+  <div class="episode-head">
+    <img class="art" src="{{ ep.image | default: site.cover | relative_url }}" alt="" width="320" height="320">
+    <div>
+      <p class="row-meta">
+        {%- if ep.number %}Епизод #{{ ep.number }} · {% elsif ep.episode_type == "bonus" %}Специален епизод · {% elsif ep.episode_type == "trailer" %}Трейлър · {% endif -%}
+        {{ ep.date | date: "%d.%m.%Y" }} · {{ ep.duration_label }}
+      </p>
+      <h1>{{ ep.short_title }}</h1>
+      <audio controls preload="none" src="{{ site.media_base }}{{ ep.audio_file }}"></audio>
+      <p class="download"><a href="{{ site.media_base }}{{ ep.audio_file }}" download>Изтегли MP3</a></p>
+    </div>
+  </div>
+
+  <div class="notes">
+    {{ content }}
+  </div>
+
+  {%- if ep.practice %}
+  {%- assign pr = ep.practice %}
+  <section class="practice">
+    <h2>Практика</h2>
+    <p class="row-meta">{{ pr.duration_label }}</p>
+    <h3>{{ pr.short_title }}</h3>
+    <audio controls preload="none" src="{{ site.media_base }}{{ pr.audio_file }}"></audio>
+    <div class="notes">{{ pr.description_html }}</div>
+  </section>
+  {%- endif %}
+
+  {%- if ep.number %}
+  {%- assign full = site.episodes | where: "episode_type", "full" | sort: "number" %}
+  <nav class="prev-next">
+    {%- for e in full %}
+      {%- if e.number == ep.number %}
+        {%- assign i = forloop.index0 %}
+        {%- if i > 0 %}{% assign pi = i | minus: 1 %}{% assign prv = full[pi] %}{% endif %}
+        {%- assign ni = i | plus: 1 %}{% assign nxt = full[ni] %}
+      {%- endif %}
+    {%- endfor %}
+    {%- if prv %}<a class="prev" href="{{ prv.url | relative_url }}">← #{{ prv.number }} {{ prv.short_title }}</a>{% else %}<span></span>{% endif %}
+    {%- if nxt %}<a class="next" href="{{ nxt.url | relative_url }}">#{{ nxt.number }} {{ nxt.short_title }} →</a>{% endif %}
+  </nav>
+  {%- endif %}
+</article>

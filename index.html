@@ -1,0 +1,55 @@
+---
+layout: default
+---
+{%- assign show = site.data.show -%}
+{%- assign full = site.episodes | where: "episode_type", "full" | sort: "number" | reverse -%}
+{%- assign bonus = site.episodes | where: "episode_type", "bonus" | sort: "date" -%}
+{%- assign trailer = site.episodes | where: "episode_type", "trailer" | first -%}
+{%- assign latest = full | first -%}
+
+<section class="hero">
+  <img class="art" src="{{ site.cover | relative_url }}" alt="{{ show.title | escape }}" width="240" height="240">
+  <div>
+    <h1>{{ show.title }}</h1>
+    <p>{{ show.description }}</p>
+    <div class="subscribe">
+      <a class="button" href="{{ '/feed.xml' | relative_url }}">RSS</a>
+      <button class="button secondary" type="button" data-copy="{{ '/feed.xml' | absolute_url }}">Копирай адреса на подкаста</button>
+    </div>
+    {%- if trailer %}
+    <p class="row-meta">Представяне · {{ trailer.duration_label }}</p>
+    <audio controls preload="none" src="{{ site.media_base }}{{ trailer.audio_file }}"></audio>
+    {%- endif %}
+  </div>
+</section>
+
+<section class="latest">
+  <h2>Последен епизод</h2>
+  <ul class="episode-list">{% include episode-row.html ep=latest %}</ul>
+  <audio controls preload="none" src="{{ site.media_base }}{{ latest.audio_file }}"></audio>
+</section>
+
+<section>
+  <h2>Всички епизоди <span class="count">{{ full.size }}</span></h2>
+  <ul class="episode-list">
+    {%- for ep in full %}{% include episode-row.html ep=ep %}{% endfor %}
+  </ul>
+</section>
+
+<section>
+  <h2>Специални епизоди</h2>
+  <ul class="episode-list">
+    {%- for ep in bonus %}{% include episode-row.html ep=ep %}{% endfor %}
+  </ul>
+</section>
+
+<script>
+  document.querySelectorAll('[data-copy]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      navigator.clipboard.writeText(b.dataset.copy).then(function () {
+        var t = b.textContent; b.textContent = 'Копирано!';
+        setTimeout(function () { b.textContent = t; }, 1500);
+      });
+    });
+  });
+</script>
