@@ -1,116 +1,140 @@
-# Podcast hosting plan — „За Учителите“
+# „За Учителите“ — podcast hosting
 
-Goal: move the podcast off SoundCloud to a static setup we control:
-
-1. audio files and episode artwork in storage we own,
-2. a homepage at **https://podcast.znam.be** to browse and play episodes,
-3. an RSS feed at **https://podcast.znam.be/feed.xml** that any podcast app can subscribe to.
+Status (2026-11-14): **live** at https://podcast.znam.be, feed at https://podcast.znam.be/feed.xml.
+All 160 SoundCloud recordings have been migrated. The podcast is paused. When it restarts,
+Claude publishes new episodes following [Publishing a new episode](#publishing-a-new-episode).
 
 ## Architecture
 
 | Piece | Where | URL |
 |---|---|---|
 | Website, RSS feed, artwork | GitHub Pages, built by GitHub from `main` (Jekyll, `github-pages` gem) | `https://podcast.znam.be/` |
-| Audio (MP3) | Cloudflare R2 bucket `znambe-podcast` | `https://media.znam.be/episodes/<file>.mp3` |
+| Audio (MP3) | Cloudflare R2 bucket `znambe-podcast`, folder `episodes/` | `https://media.znam.be/episodes/<file>.mp3` |
 
-- **Site and feed: GitHub Pages.** Classic "deploy from branch" (`main`, root), with `CNAME` = `podcast.znam.be`. The site is ~55 MB, far inside Pages limits.
-- **Audio: R2.** It is too big for Pages: 9.38 GB, files up to ~140 MB, and every subscriber's app downloads every episode.
-- **DNS in Cloudflare:**
-  - `podcast` CNAME → `angel-georgiev.github.io`, set to **DNS only** (grey cloud) so GitHub can issue the HTTPS certificate.
-  - `media` is attached to the R2 bucket.
-- **Redirects:** if the feed ever has to move, Cloudflare Redirect Rules can 301 it (requires proxying `podcast`).
-- **Caching:** GitHub Pages sends `Cache-Control: max-age=600`, so feed updates reach apps within ~10 min.
-- **Local preview:** `bundle install && bundle exec jekyll serve`. Set `LANG=C.UTF-8` if Sass complains about encoding.
+- **GitHub Pages:**
+  - Classic "deploy from branch": `main`, root.
+  - `CNAME` file = `podcast.znam.be`. Don't delete it, or the custom domain is dropped.
+  - *Enforce HTTPS* is on.
+  - Builds take ~1 min after a merge. Pages sends `Cache-Control: max-age=600`, so apps see changes within ~10 min.
+- **Cloudflare DNS** for `znam.be`:
+  - `podcast` CNAME → `angel-georgiev.github.io`, **DNS only** (grey cloud). Proxying it would break GitHub's certificate renewal.
+  - `media` is the R2 bucket's custom domain. The bucket's `r2.dev` URL is disabled.
+- **Bot protection:** Cloudflare's default bot protection on `media.znam.be` returns 403 to generic library user agents (e.g. `Python-urllib`). Real podcast apps, browsers and `curl` get 200. Scripts must send their own `User-Agent`.
+- **Why this split:** audio is 9.4 GB with files up to ~140 MB, too big for Pages. The site itself is ~55 MB.
+- **Local preview:**
 
-## Content (migrated from SoundCloud)
+  ```bash
+  bundle install && LANG=C.UTF-8 bundle exec jekyll serve
+  ```
 
-Source: https://soundcloud.com/znambe, feed
-`https://feeds.soundcloud.com/users/soundcloud:users:772017865/sounds.rss`
-(archived copy in `sources/soundcloud-feed.xml`, imported by `scripts/import_soundcloud.py`).
+## Repository layout
 
-The old feed has 160 items. They map onto the new site like this:
-
-| Old items | Count | New home | In RSS feed? |
-|---|---|---|---|
-| Епизод #1–#85 (#1–#14 titled just "#N …") | 85 | One page per episode | Yes, `episodeType: full`, `itunes:episode` = number |
-| Практика #15–#85 (none for #1–#14 and #31) | 70 | Second player on the matching episode's page, matched by number. All 70 also match by guest name. | No |
-| #I–#IV English episodes (Jul–Aug 2020) | 4 | "Специални" section on the site | Yes, `episodeType: bonus` |
-| Представяне на подкаст „За Учителите“ (trailer) | 1 | Top of the homepage | Yes, `episodeType: trailer` |
-
-So apps see 85 numbered episodes, plus 4 bonus episodes and 1 trailer.
-
-### Data model
-
-One file per episode in `_episodes/`. The matching Практика clip is nested inside it:
-
-```yaml
-title: "Епизод #85 Как да не ставаме англичани с Моника Стефанова"
-date: "2022-07-14T06:12:38+00:00"
-guid: "tag:soundcloud,2010:tracks/1304918038"   # kept from SoundCloud — never change
-episode_type: "full"                              # full | bonus | trailer
-number: 85
-audio_file: "epizod-85-....mp3"
-audio_bytes: 98992953
-duration: "00:41:16"
-image: "/assets/episodes/epizod-85-....jpg"
-description: "..."
-practice:                                         # optional
-  title: "Практика #85 ..."
-  audio_file: "praktika-85-....mp3"
-  audio_bytes: 9747657
-  duration: "00:04:03"
-  image: "/assets/episodes/praktika-85-....jpg"
-  description: "..."
+```
+_config.yml              site URL, media_base, podcast:guid, cover paths
+_data/show.json          show metadata (title, description, owner, category, language)
+_episodes/<slug>.html    one file per feed item; front matter = metadata, body = show notes (HTML)
+_layouts/, _includes/    page templates
+index.html               homepage
+feed.xml                 RSS feed template
+assets/cover.jpg         show cover (1000×1000, used on the site)
+assets/cover-1400.jpg    same cover upscaled to 1400×1400 (Apple minimum), used in the feed
+assets/episodes/         episode artwork, 3000×3000 JPEG
+assets/style.css
+scripts/                 import_soundcloud.py, copy_audio_to_r2.py (migration, kept for reference)
+sources/                 archived copy of the original SoundCloud feed
 ```
 
-Show-level metadata is in `_data/show.json`: title, description, language `bg`, category Education, owner `angel@znam.be`.
+## Content model
 
-### Decisions taken
+Feed items are of three types: 85 numbered episodes (`full`), 4 English specials (`bonus`), 1 trailer.
+Short "Практика" clips are not separate feed items. They are nested in their episode and shown as a second player on its page.
 
-- **Audio quality:** keep the SoundCloud files as-is (320 kbps mono MP3). That's 9.38 GB total, about $0.015/GB-month beyond R2's 10 GB free tier.
-- **Artwork:** keep the current images. Episode art is 3000×3000.
-  - The show cover is 1000×1000, below Apple's 1400×1400 minimum. The site will use the original.
-  - The feed's `itunes:image` points to the same picture upscaled to 1400×1400, so it looks identical and passes validation.
-- **Subscriber migration:** done after the new site is live (see phase 6).
+```yaml
+title: "Епизод #85 Как да не ставаме англичани с Моника Стефанова"   # full title, feed <title>
+short_title: "Как да не ставаме англичани с Моника Стефанова"         # itunes:title, page heading
+date: "2022-07-14T06:12:28+00:00"
+guid: "tag:soundcloud,2010:tracks/1304918038"   # NEVER change once published
+episode_type: "full"                              # full | bonus | trailer
+number: 85                                        # full episodes only
+audio_file: "epizod-85-....mp3"                   # object episodes/<audio_file> in R2
+audio_bytes: 98992953                             # exact size; must match R2
+duration: "00:41:16"
+duration_label: "41 мин"
+image: "/assets/episodes/epizod-85-....jpg"
+description: "plain-text show notes"
+practice: { title, short_title, audio_file, audio_bytes, duration, duration_label, image, description, description_html }   # optional
+---
+<p>Show notes as HTML (body)</p>
+```
 
-## Site
+Front matter values are written as JSON scalars and objects, which are valid YAML and avoid quoting problems.
 
-- **Homepage:** show cover and description, subscribe links, trailer, episode list (newest first), "Специални" section.
-- **Episode page:** artwork, `<audio controls preload="none">` player, show notes (links auto-linked), and a "Практика" block with its own player when there is one.
-- **Language of the UI:** Bulgarian.
-- No JavaScript framework is needed; the player is the browser's native one.
+## Publishing a new episode
 
-## RSS feed
+Claude does this end to end. The owner provides the content and merges the pull request.
 
-- RSS 2.0 with the `itunes` and `podcast` namespaces.
-- Channel fields: title, link, description, `language` bg, `itunes:author`, `itunes:owner` (angel@znam.be), `itunes:image`, `itunes:category` Education, `itunes:explicit` false, `podcast:guid`, `podcast:locked`.
-- Per item: original `guid`, `pubDate`, `enclosure` (url/length/type), `itunes:duration`, `itunes:episode`, `itunes:episodeType`, description, `itunes:image`.
-- CI validates the feed XML and checks that every enclosure URL returns 200 with the declared byte size.
+### What the owner provides
 
-## Setup checklist (owner)
+- **Audio:** MP3 (or WAV), plus the Практика clip if there is one.
+- **Text:** title (guest name at the end, as before) and show notes.
+- **Artwork:** square JPEG, ideally 3000×3000, following the existing template.
+- **Publish date:** optional; defaults to the merge day.
 
-- [x] R2 bucket `znambe-podcast` with custom domain `media.znam.be` (verified: range requests return 206).
-- [x] Cloudflare API token with R2 edit. **Roll it after the migration**, since it was shared in chat.
-- [ ] GitHub repo → Settings → Pages → Source: *Deploy from a branch*, branch `main`, folder `/ (root)`.
-- [ ] Cloudflare DNS: `podcast` CNAME `angel-georgiev.github.io`, DNS only.
-- [ ] GitHub → Settings → Pages: custom domain `podcast.znam.be` (read from `CNAME`), then tick *Enforce HTTPS* once the certificate exists.
-- [ ] Optional: delete the unused Cloudflare Pages project / GitHub app connection.
+Files can be attached in the session or put in a shared folder.
 
-## Phases
+### What Claude needs in the session
 
-1. **Data:** restructure `_episodes/` into the 85 + 4 + 1 model above, nesting the Практика clips. Create the 1400×1400 feed cover.
-2. **Site:** Jekyll layouts, homepage, episode pages, `feed.xml`, Gemfile.
-3. **CI:** a GitHub Actions workflow that builds the site, validates the feed and checks audio URLs.
-4. **Audio copy:** `scripts/copy_audio_to_r2` streams each MP3 from SoundCloud to R2, one file at a time.
-   - It skips files already uploaded with the right size, so it can resume after interruptions.
-   - It verifies sizes after uploading.
-5. **Preview:** check locally / on GitHub Pages and run the feed through a validator (e.g. Podbase / Cast Feed Validator).
-6. **Go live:** merge to `main`.
-   - Point the old SoundCloud feed at the new one: SoundCloud redirect setting if available, otherwise update the feed URL in Apple Podcasts Connect and Spotify for Creators. Then add `<itunes:new-feed-url>`.
-   - Submit to Podcast Index.
-   - Keep the SoundCloud tracks online until the directories show the new feed.
-7. **Later (optional):** download stats via OP3, transcripts, adding new episodes with `scripts/add-episode`.
+- `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` (`953a61161c8fb16cac3c355fe1603983`), set as environment variables / network secrets in the Claude cloud environment, not pasted in chat.
+  - The token needs R2 edit on `znambe-podcast`. The owner keeps the existing token for this.
+- `ffprobe`/`ffmpeg` (preinstalled in the cloud image) for duration, and for encoding if the source is WAV.
 
-## Unverified assumptions
+### Steps
 
-- SoundCloud still offers a feed-redirect setting.
+1. **Number and slug.** Number = highest existing `number` + 1. Slug follows the existing pattern: transliterated title, e.g. `epizod-86-<topic>`, `praktika-86-<topic>`.
+2. **Audio.**
+   - If the source is WAV, encode to MP3 mono. The bitrate is an open decision (see below).
+   - Read the exact byte size and the duration (`ffprobe`).
+3. **Upload** the audio to R2 at `episodes/<slug>.mp3` with `Content-Type: audio/mpeg`.
+   - Verify via `https://media.znam.be/episodes/<slug>.mp3` that a HEAD request returns the same size, and that a range request returns 206.
+   - Never overwrite an already-published file. A re-edit gets a new filename.
+4. **Artwork** → `assets/episodes/<slug>.jpg`. Check it is square, at least 1400 px, RGB JPEG.
+5. **Episode file** `_episodes/<slug>.html`:
+   - All fields of the content model, with `practice` nested if there is one.
+   - The `guid` for new episodes is `https://podcast.znam.be/episodes/<slug>/`. It is fixed at creation and never changed, even if the slug later changes.
+6. **Build and check locally** with `jekyll build`:
+   - the feed parses;
+   - the item count went up by one;
+   - the new item's enclosure URL, length and type are correct;
+   - the page renders, with screenshots for the owner.
+7. **Pull request** to `main`, with screenshots and the feed diff. **The owner merges = the episode goes live.**
+8. **After merge:** confirm that https://podcast.znam.be/feed.xml contains the new item. Apple, Spotify and the others pick it up on their own next poll; no resubmission is needed.
+
+### To build when publishing restarts
+
+- `scripts/add_episode.py` automates steps 1–6. It should reuse `to_html`, `short_title` and `duration_label` from `import_soundcloud.py`, and the R2 upload code from `copy_audio_to_r2.py`.
+- Optional: a GitHub Actions check on pull requests that builds the site, validates `feed.xml`, and checks each enclosure's size against R2.
+
+### Open decisions for new episodes
+
+- **Encoding for WAV sources.** The old episodes are 320 kbps mono MP3. 128 kbps mono would cut sizes by ~60% with no audible difference for speech (not tested here). Default if not decided: match the old episodes at 320 kbps.
+
+## Migration from SoundCloud (done)
+
+- **Source:** https://soundcloud.com/znambe. The feed is archived in `sources/soundcloud-feed.xml`.
+- **Audio:** all 160 SoundCloud recordings (85 episodes, 70 Практика, 4 bonus, 1 trailer) were copied to R2 unchanged (320 kbps mono, 9.38 GB) and verified by size. Each feed episode keeps its original SoundCloud `guid`, so apps don't see the 90 feed items as new.
+- **Artwork:** the original images were kept. The show cover is upscaled to 1400×1400 for the feed only.
+- **Subscriber redirect:** as of 2026-11-14, the old SoundCloud feed is **not** redirected. It still serves its own items with no `itunes:new-feed-url`.
+  - Either set SoundCloud's feed redirect to `https://podcast.znam.be/feed.xml`, if the setting exists, or change the feed URL in Apple Podcasts Connect and Spotify for Creators.
+  - Keep the SoundCloud tracks online until directories show the new feed.
+  - Submit the new feed to Podcast Index.
+
+## Cloudflare resources
+
+| Resource | Status |
+|---|---|
+| R2 bucket `znambe-podcast` (160 objects in `episodes/`) | keep |
+| `media.znam.be` custom domain on the bucket | keep |
+| DNS `podcast` CNAME → `angel-georgiev.github.io` (DNS only) | keep |
+| API token with R2 edit | keep. Roll it (it was pasted in chat) and limit it to R2 on this bucket. |
+| Workers project `znam-be-podcast` (Workers Builds, from the first setup attempt) | delete. It fails on every push to `main`. |
+| Cloudflare GitHub app access to this repo | remove, unless used elsewhere |
