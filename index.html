@@ -29,7 +29,7 @@ layout: default
     <div class="owl"><img src="{{ '/assets/brand/owl-headphones.png' | relative_url }}" alt="" width="600" height="703"></div>
   </section>
 
-  <section class="section" id="praktiki" aria-labelledby="practice-list-title">
+  <section class="section" id="praktiki-red" aria-labelledby="practice-list-title">
     <div class="section-head">
       <h2 id="practice-list-title">Практики</h2>
       <span class="count">{{ practice_count }} кратки идеи за класната стая</span>
@@ -46,32 +46,26 @@ layout: default
     </div>
   </section>
 
-  <section class="section" id="epizodi" aria-labelledby="all-title">
+  <section class="section" id="epizodi" aria-labelledby="latest-title">
     <div class="section-head">
-      <h2 id="all-title">Всички епизоди</h2>
-      <span class="count">{{ full.size }}</span>
+      <h2 id="latest-title">Последни епизоди</h2>
+      <a class="btn btn--text see-all" href="{{ '/epizodi/' | relative_url }}">Всички {{ full.size }}{% include icons/arrow-right.svg %}</a>
     </div>
     <ul class="cards">
-      {%- for ep in full %}{% include episode-card.html ep=ep %}{% endfor %}
+      {%- for ep in full limit: 6 %}{% include episode-card.html ep=ep %}{% endfor %}
     </ul>
   </section>
 
-  <section class="section" id="specialni" aria-labelledby="special-title">
-    <div class="section-head">
-      <h2 id="special-title">Специални епизоди</h2>
-      <span class="count">на английски</span>
-    </div>
-    <ul class="cards">
-      {%- for ep in bonus %}{% include episode-card.html ep=ep %}{% endfor %}
-    </ul>
-  </section>
-
-  <section class="section panel subscribe on-dark" id="abonirai-se" aria-labelledby="sub-title">
-    <h2 id="sub-title">Слушай където искаш</h2>
-    <p>Копирай адреса на подкаста и го добави в приложението си за подкасти — Apple Podcasts, Pocket Casts, Overcast, AntennaPod и други. Новите епизоди ще идват сами.</p>
-    <div class="feed-url">
-      <code>{{ '/feed.xml' | absolute_url }}</code>
-      <button class="btn" type="button" data-copy="{{ '/feed.xml' | absolute_url }}">{% include icons/copy.svg %}<span data-label>Копирай адреса</span></button>
-    </div>
+  <section class="section links" aria-label="Още от подкаста">
+    <a class="panel link-panel on-dark" href="{{ '/specialni/' | relative_url }}">
+      <span class="kicker">На английски</span>
+      <span class="h">Специални епизоди</span>
+      <span>{{ bonus.size }} разговора от лятото на 2020 г.</span>
+    </a>
+    <a class="panel link-panel on-dark" href="{{ '/abonirai-se/' | relative_url }}">
+      <span class="kicker">Слушай където искаш</span>
+      <span class="h">Абонирай се</span>
+      <span>Добави подкаста в Apple Podcasts, Pocket Casts, Overcast и др.</span>
+    </a>
   </section>
 </div>

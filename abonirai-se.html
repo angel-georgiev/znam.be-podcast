@@ -1,0 +1,36 @@
+---
+layout: default
+title: Абонирай се
+permalink: /abonirai-se/
+nav: abonirai-se
+description: "Как да слушаш „За Учителите“ в любимото си приложение за подкасти — с адреса на подкаста."
+---
+{%- assign feed = '/feed.xml' | absolute_url -%}
+
+<div class="wrap">
+  <section class="panel page-intro on-dark" aria-labelledby="page-title">
+    <p class="kicker">Подкаст „За Учителите“</p>
+    <h1 id="page-title">Абонирай се</h1>
+    <p class="lead">Слушай където искаш. Добави подкаста в приложението си веднъж — новите епизоди ще идват сами.</p>
+  </section>
+
+  <section class="section section--tight panel subscribe on-dark" aria-labelledby="feed-title">
+    <h2 id="feed-title">Адресът на подкаста</h2>
+    <p>Копирай го и го постави в приложението си за подкасти.</p>
+    <div class="feed-url">
+      <code>{{ feed }}</code>
+      <button class="btn" type="button" data-copy="{{ feed }}">{% include icons/copy.svg %}<span data-label>Копирай адреса</span></button>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="apps-title">
+    <h2 id="apps-title" class="section-head">Как да го добавиш</h2>
+    <ul class="cards steps">
+      <li class="card"><div class="body"><h3>Apple Podcasts</h3><p>Библиотека → бутонът „…“ горе вдясно → „Follow a Show by URL“ → постави адреса.</p></div></li>
+      <li class="card"><div class="body"><h3>Pocket Casts</h3><p>Търсене → постави адреса в полето за търсене → „Абонирай се“.</p></div></li>
+      <li class="card"><div class="body"><h3>Overcast</h3><p>„+“ горе вдясно → „Add URL“ → постави адреса.</p></div></li>
+      <li class="card"><div class="body"><h3>AntennaPod</h3><p>„Добави подкаст“ → „Добави подкаст по RSS адрес“ → постави адреса.</p></div></li>
+    </ul>
+    <p class="note">Менютата в приложенията се променят — ако някоя стъпка изглежда различно, потърси „добави по адрес“ или „RSS“. Spotify не позволява добавяне по адрес.</p>
+  </section>
+</div>

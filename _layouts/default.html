@@ -27,12 +27,13 @@
     <div class="wrap">
       <a class="logo" href="{{ '/' | relative_url }}"><img src="{{ '/assets/brand/owl-logo-horizontal.svg' | relative_url }}" alt="Знам.бе — За Учителите, начало" width="137" height="48"></a>
       <nav class="site-nav" aria-label="Основно меню">
-        <a href="{{ '/' | relative_url }}#epizodi"{% if page.url == "/" or page.collection == "episodes" %} aria-current="page"{% endif %}>Епизоди</a>
-        <a href="{{ '/praktiki/' | relative_url }}"{% if page.url == "/praktiki/" %} aria-current="page"{% endif %}>Практики</a>
-        <a href="{{ '/' | relative_url }}#specialni">Специални</a>
+        {%- assign nav = page.nav %}{% if page.collection == "episodes" %}{% if page.episode_type == "bonus" %}{% assign nav = "specialni" %}{% else %}{% assign nav = "epizodi" %}{% endif %}{% endif %}
+        <a href="{{ '/epizodi/' | relative_url }}"{% if nav == "epizodi" %} aria-current="page"{% endif %}>Епизоди</a>
+        <a href="{{ '/praktiki/' | relative_url }}"{% if nav == "praktiki" %} aria-current="page"{% endif %}>Практики</a>
+        <a href="{{ '/specialni/' | relative_url }}"{% if nav == "specialni" %} aria-current="page"{% endif %}>Специални</a>
         <a href="https://znam.be">Знам.бе</a>
       </nav>
-      <a class="btn btn--secondary" href="{{ '/' | relative_url }}#abonirai-se">{% include icons/rss.svg %}Абонирай се</a>
+      <a class="btn btn--secondary" href="{{ '/abonirai-se/' | relative_url }}"{% if nav == "abonirai-se" %} aria-current="page"{% endif %}>{% include icons/rss.svg %}Абонирай се</a>
     </div>
   </header>
 
@@ -50,9 +51,10 @@
         <div>
           <h2>Подкастът</h2>
           <ul>
-            <li><a href="{{ '/' | relative_url }}#epizodi">Всички епизоди</a></li>
+            <li><a href="{{ '/epizodi/' | relative_url }}">Всички епизоди</a></li>
             <li><a href="{{ '/praktiki/' | relative_url }}">Практики</a></li>
-            <li><a href="{{ '/' | relative_url }}#specialni">Специални епизоди</a></li>
+            <li><a href="{{ '/specialni/' | relative_url }}">Специални епизоди</a></li>
+            <li><a href="{{ '/abonirai-se/' | relative_url }}">Абонирай се</a></li>
             <li><a href="{{ '/feed.xml' | relative_url }}">RSS емисия</a></li>
           </ul>
         </div>
