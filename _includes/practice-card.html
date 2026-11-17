@@ -1,0 +1,13 @@
+{%- assign ep = include.ep -%}{%- assign pr = ep.practice -%}
+{%- assign pr_url = ep.url | append: "#praktika" -%}
+<li class="card card--practice">
+  <img class="art" src="{{ pr.image | default: ep.image | relative_url }}" alt="" width="104" height="104" loading="lazy">
+  <div class="body">
+    <div class="tags">
+      <span class="tag tag--dark">Практика #{{ ep.number }}</span>
+      <span class="tag">{% include icons/clock.svg %}{{ pr.duration_label }}</span>
+    </div>
+    <h3><a href="{{ pr_url | relative_url }}">{{ pr.short_title }}</a></h3>
+    {% include play-button.html item=pr page_url=pr_url art=pr.image cls="btn--secondary" sr=pr.short_title %}
+  </div>
+</li>

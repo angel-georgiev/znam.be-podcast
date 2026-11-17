@@ -6,50 +6,72 @@ layout: default
 {%- assign bonus = site.episodes | where: "episode_type", "bonus" | sort: "date" -%}
 {%- assign trailer = site.episodes | where: "episode_type", "trailer" | first -%}
 {%- assign latest = full | first -%}
+{%- assign practice_count = 0 -%}{% for e in full %}{% if e.practice %}{% assign practice_count = practice_count | plus: 1 %}{% endif %}{% endfor -%}
 
-<section class="hero">
-  <img class="art" src="{{ site.cover | relative_url }}" alt="{{ show.title | escape }}" width="240" height="240">
-  <div>
-    <h1>{{ show.title }}</h1>
-    <p>{{ show.description }}</p>
-    <div class="subscribe">
-      <a class="button" href="{{ '/feed.xml' | relative_url }}">RSS</a>
-      <button class="button secondary" type="button" data-copy="{{ '/feed.xml' | absolute_url }}">Копирай адреса на подкаста</button>
+<div class="wrap">
+  <section class="panel hero on-dark" aria-labelledby="show-title">
+    <div>
+      <p class="kicker">Подкаст на Знам.бе</p>
+      <h1 id="show-title">{{ show.title }}</h1>
+      <p class="lead">{{ show.description }}</p>
+      <ul class="facts">
+        <li><b>{{ full.size }} епизода</b> с учители</li>
+        <li><b>{{ practice_count }} практики</b> за класната стая</li>
+        <li>около <b>един учебен час</b> всеки</li>
+      </ul>
+      <div class="actions">
+        {% include play-button.html item=latest page_url=latest.url art=latest.image label="Слушай последния епизод" %}
+        {%- if trailer %}
+        {% include play-button.html item=trailer page_url=trailer.url art=site.cover cls="btn--text" label="Представяне (30 сек)" %}
+        {%- endif %}
+      </div>
     </div>
-    {%- if trailer %}
-    <p class="row-meta">Представяне · {{ trailer.duration_label }}</p>
-    <audio controls preload="none" src="{{ site.media_base }}{{ trailer.audio_file }}"></audio>
-    {%- endif %}
-  </div>
-</section>
+    <div class="owl"><img src="{{ '/assets/brand/owl-headphones.png' | relative_url }}" alt="" width="600" height="703"></div>
+  </section>
 
-<section class="latest">
-  <h2>Последен епизод</h2>
-  <ul class="episode-list">{% include episode-row.html ep=latest %}</ul>
-  <audio controls preload="none" src="{{ site.media_base }}{{ latest.audio_file }}"></audio>
-</section>
+  <section class="section" id="praktiki" aria-labelledby="practice-list-title">
+    <div class="section-head">
+      <h2 id="practice-list-title">Практики</h2>
+      <span class="count">{{ practice_count }} кратки идеи за класната стая</span>
+      <a class="btn btn--text see-all" href="{{ '/praktiki/' | relative_url }}">Виж всички{% include icons/arrow-right.svg %}</a>
+      <div class="row-nav" hidden>
+        <button class="iconbtn" type="button" data-row-scroll="-1" aria-controls="practice-row" aria-label="Предишни практики">{% include icons/arrow-left.svg %}</button>
+        <button class="iconbtn" type="button" data-row-scroll="1" aria-controls="practice-row" aria-label="Следващи практики">{% include icons/arrow-right.svg %}</button>
+      </div>
+    </div>
+    <div class="scroller" id="practice-row" role="region" aria-labelledby="practice-list-title" tabindex="0">
+      <ul class="cards cards--row">
+        {%- for ep in full %}{% if ep.practice %}{% include practice-card.html ep=ep %}{% endif %}{% endfor %}
+      </ul>
+    </div>
+  </section>
 
-<section>
-  <h2>Всички епизоди <span class="count">{{ full.size }}</span></h2>
-  <ul class="episode-list">
-    {%- for ep in full %}{% include episode-row.html ep=ep %}{% endfor %}
-  </ul>
-</section>
+  <section class="section" id="epizodi" aria-labelledby="all-title">
+    <div class="section-head">
+      <h2 id="all-title">Всички епизоди</h2>
+      <span class="count">{{ full.size }}</span>
+    </div>
+    <ul class="cards">
+      {%- for ep in full %}{% include episode-card.html ep=ep %}{% endfor %}
+    </ul>
+  </section>
 
-<section>
-  <h2>Специални епизоди</h2>
-  <ul class="episode-list">
-    {%- for ep in bonus %}{% include episode-row.html ep=ep %}{% endfor %}
-  </ul>
-</section>
+  <section class="section" id="specialni" aria-labelledby="special-title">
+    <div class="section-head">
+      <h2 id="special-title">Специални епизоди</h2>
+      <span class="count">на английски</span>
+    </div>
+    <ul class="cards">
+      {%- for ep in bonus %}{% include episode-card.html ep=ep %}{% endfor %}
+    </ul>
+  </section>
 
-<script>
-  document.querySelectorAll('[data-copy]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      navigator.clipboard.writeText(b.dataset.copy).then(function () {
-        var t = b.textContent; b.textContent = 'Копирано!';
-        setTimeout(function () { b.textContent = t; }, 1500);
-      });
-    });
-  });
-</script>
+  <section class="section panel subscribe on-dark" id="abonirai-se" aria-labelledby="sub-title">
+    <h2 id="sub-title">Слушай където искаш</h2>
+    <p>Копирай адреса на подкаста и го добави в приложението си за подкасти — Apple Podcasts, Pocket Casts, Overcast, AntennaPod и други. Новите епизоди ще идват сами.</p>
+    <div class="feed-url">
+      <code>{{ '/feed.xml' | absolute_url }}</code>
+      <button class="btn" type="button" data-copy="{{ '/feed.xml' | absolute_url }}">{% include icons/copy.svg %}<span data-label>Копирай адреса</span></button>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,3 @@
+{%- comment -%} A link to the MP3 that the sticky player takes over. Params: item (has audio_file, title), page_url, art, cls, label {%- endcomment -%}
+{%- assign src = site.media_base | append: include.item.audio_file -%}
+<a class="btn {{ include.cls }}" href="{{ src }}" data-play-src="{{ src }}" data-play-title="{{ include.item.title | escape }}" data-play-url="{{ include.page_url | relative_url }}" data-play-art="{{ include.art | absolute_url }}" data-label-idle="{{ include.label | default: 'Слушай' }}" aria-pressed="false">{% include icons/headphones.svg %}<span data-label>{{ include.label | default: "Слушай" }}</span>{% if include.sr %}<span class="visually-hidden"> {{ include.sr }}</span>{% endif %}</a>

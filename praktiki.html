@@ -1,0 +1,22 @@
+---
+layout: default
+title: Практики
+permalink: /praktiki/
+description: "Кратки практики от учителите в подкаста „За Учителите“ — конкретни идеи за класната стая, по няколко минути всяка."
+---
+{%- assign full = site.episodes | where: "episode_type", "full" | sort: "number" | reverse -%}
+{%- assign practice_count = 0 -%}{% for e in full %}{% if e.practice %}{% assign practice_count = practice_count | plus: 1 %}{% endif %}{% endfor -%}
+
+<div class="wrap">
+  <section class="panel page-intro on-dark" aria-labelledby="page-title">
+    <p class="kicker">Подкаст „За Учителите“</p>
+    <h1 id="page-title">Практики</h1>
+    <p class="lead">Всеки гост на подкаста споделя и една конкретна практика от своите часове — кратко, по няколко минути. Тук са всички {{ practice_count }} на едно място. Пълният разговор е на страницата на епизода.</p>
+  </section>
+
+  <section class="section section--tight" aria-label="Всички практики">
+    <ul class="cards">
+      {%- for ep in full %}{% if ep.practice %}{% include practice-card.html ep=ep %}{% endif %}{% endfor %}
+    </ul>
+  </section>
+</div>

@@ -27,6 +27,30 @@ Claude publishes new episodes following [Publishing a new episode](#publishing-a
   bundle install && LANG=C.UTF-8 bundle exec jekyll serve
   ```
 
+## Design
+
+The site follows the **Знам.бе Design System** (claude.ai artifact „Знам.бе Design System“, tokens as of 2026-11-16):
+
+- **Tokens:** copied into `:root` in `assets/style.css`. Only the light theme is used. Components use semantic tokens only.
+- **Type:** Uni Sans 400/600/700/800 as WOFF2 subsets (Latin + Cyrillic) in `assets/fonts/`, generated from the system's OTFs, using the fluid `fs-*` scale.
+- **Icons:** Font Awesome Free 7.3.1 solid, inline SVG from `_includes/icons/`. CC BY 4.0, credited in the footer.
+- **Logo and owl:** `assets/brand/`, taken from znam.be's own files.
+  - The system's uploaded SVG copies lost their colour styles, so they render black and aren't used.
+  - The owl is the „Слуша“ headphones pose, the brand book's podcast pose, shown once in the hero.
+- **Components:**
+  - SiteHeader, the hero as a LessonPanel-style ink panel, and PodcastEpisodeCard.
+  - A sticky PodcastPlayer (`_includes/player.html` + `assets/player.js`), with a no-JS fallback to the MP3 link and a native `<audio>`.
+  - SiteFooter.
+- **Pages:**
+  - The homepage: the hero, then a sideways-scrolling Практики row, all episodes, the specials and the subscribe block.
+  - `/praktiki/`: all 70 Практика clips, linked from the menu.
+  - One page per episode.
+- **Accessibility (WCAG 2.2 AA per the system):**
+  - a skip link and landmarks;
+  - 3px focus rings, and 44px targets;
+  - `lang="en"` on the English bonus episodes;
+  - reduced-motion handling.
+
 ## Repository layout
 
 ```
@@ -136,5 +160,3 @@ Files can be attached in the session or put in a shared folder.
 | `media.znam.be` custom domain on the bucket | keep |
 | DNS `podcast` CNAME → `angel-georgiev.github.io` (DNS only) | keep |
 | API token with R2 edit | keep. Roll it (it was pasted in chat) and limit it to R2 on this bucket. |
-| Workers project `znam-be-podcast` (Workers Builds, from the first setup attempt) | delete. It fails on every push to `main`. |
-| Cloudflare GitHub app access to this repo | remove, unless used elsewhere |

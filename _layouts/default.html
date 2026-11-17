@@ -4,13 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {%- assign show = site.data.show -%}
-  {%- if page.title %}{% assign page_title = page.title | append: " · " | append: show.title %}{% else %}{% assign page_title = show.title %}{% endif %}
+  {%- if page.short_title %}{% assign page_title = page.short_title | append: " · " | append: show.title %}{% elsif page.title %}{% assign page_title = page.title | append: " · " | append: show.title %}{% else %}{% assign page_title = show.title | append: " · подкаст на Знам.бе" %}{% endif %}
   <title>{{ page_title | escape }}</title>
   {%- assign desc = page.description | default: show.description | strip_newlines | truncate: 200 %}
   <meta name="description" content="{{ desc | escape }}">
+  <meta name="theme-color" content="#261d3c">
   <link rel="canonical" href="{{ page.url | absolute_url }}">
   <link rel="alternate" type="application/rss+xml" title="{{ show.title | escape }}" href="{{ '/feed.xml' | absolute_url }}">
   <link rel="icon" href="{{ site.cover | relative_url }}">
+  <link rel="preload" href="{{ '/assets/fonts/UniSans-Regular.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{ '/assets/fonts/UniSans-Bold.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin>
   <meta property="og:type" content="website">
   <meta property="og:title" content="{{ page_title | escape }}">
   <meta property="og:description" content="{{ desc | escape }}">
@@ -19,18 +22,53 @@
   <link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}">
 </head>
 <body>
+  <a class="skip-link" href="#main">Към съдържанието</a>
   <header class="site-header">
-    <a class="brand" href="{{ '/' | relative_url }}">
-      <img src="{{ site.cover | relative_url }}" alt="" width="40" height="40">
-      <span>{{ show.title }}</span>
-    </a>
-    <a class="rss" href="{{ '/feed.xml' | relative_url }}">RSS</a>
+    <div class="wrap">
+      <a class="logo" href="{{ '/' | relative_url }}"><img src="{{ '/assets/brand/owl-logo-horizontal.svg' | relative_url }}" alt="Знам.бе — За Учителите, начало" width="137" height="48"></a>
+      <nav class="site-nav" aria-label="Основно меню">
+        <a href="{{ '/' | relative_url }}#epizodi"{% if page.url == "/" or page.collection == "episodes" %} aria-current="page"{% endif %}>Епизоди</a>
+        <a href="{{ '/praktiki/' | relative_url }}"{% if page.url == "/praktiki/" %} aria-current="page"{% endif %}>Практики</a>
+        <a href="{{ '/' | relative_url }}#specialni">Специални</a>
+        <a href="https://znam.be">Знам.бе</a>
+      </nav>
+      <a class="btn btn--secondary" href="{{ '/' | relative_url }}#abonirai-se">{% include icons/rss.svg %}Абонирай се</a>
+    </div>
   </header>
-  <main>
+
+  <main id="main">
     {{ content }}
   </main>
+
   <footer class="site-footer">
-    <p>{{ show.title }} е подкаст на <a href="https://znam.be">Знам.бе</a>.</p>
+    <div class="wrap">
+      <div class="cols">
+        <div>
+          <img src="{{ '/assets/brand/owl-logo-horizontal.svg' | relative_url }}" alt="Знам.бе" width="126" height="44">
+          <p>„{{ show.title }}“ е подкаст на Знам.бе за учителите, които правят положителната промяна в училище всеки ден.</p>
+        </div>
+        <div>
+          <h2>Подкастът</h2>
+          <ul>
+            <li><a href="{{ '/' | relative_url }}#epizodi">Всички епизоди</a></li>
+            <li><a href="{{ '/praktiki/' | relative_url }}">Практики</a></li>
+            <li><a href="{{ '/' | relative_url }}#specialni">Специални епизоди</a></li>
+            <li><a href="{{ '/feed.xml' | relative_url }}">RSS емисия</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2>Знам.бе</h2>
+          <ul>
+            <li><a href="https://znam.be">znam.be</a></li>
+            <li><a href="mailto:{{ show.owner_email }}">{{ show.owner_email }}</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="legal">© Знам.бе. Иконки: Font Awesome Free от Fonticons, Inc. — CC BY 4.0.</p>
+    </div>
   </footer>
+
+  {% include player.html %}
+  <script src="{{ '/assets/player.js' | relative_url }}" defer></script>
 </body>
 </html>
