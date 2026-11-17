@@ -1,0 +1,22 @@
+---
+layout: default
+title: Специални епизоди
+permalink: /specialni/
+nav: specialni
+description: "Четири специални епизода на английски език от лятото на 2020 г. — разговори с учители и изследователи от различни страни."
+---
+{%- assign bonus = site.episodes | where: "episode_type", "bonus" | sort: "date" -%}
+
+<div class="wrap">
+  <section class="panel page-intro on-dark" aria-labelledby="page-title">
+    <p class="kicker">Подкаст „За Учителите“</p>
+    <h1 id="page-title">Специални епизоди</h1>
+    <p class="lead">През лятото на 2020 г. записахме {{ bonus.size }} епизода на английски език с учители и изследователи от различни страни.</p>
+  </section>
+
+  <section class="section section--tight" aria-label="Специални епизоди">
+    <ul class="cards">
+      {%- for ep in bonus %}{% include episode-card.html ep=ep %}{% endfor %}
+    </ul>
+  </section>
+</div>

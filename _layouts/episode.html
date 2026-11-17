@@ -3,7 +3,7 @@ layout: default
 ---
 {%- assign ep = page -%}
 <div class="wrap">
-  <p class="crumbs"><a href="{{ '/' | relative_url }}#epizodi">{% include icons/arrow-left.svg %}Всички епизоди</a></p>
+  <p class="crumbs">{% if ep.episode_type == "bonus" %}<a href="{{ '/specialni/' | relative_url }}">{% include icons/arrow-left.svg %}Специални епизоди</a>{% else %}<a href="{{ '/epizodi/' | relative_url }}">{% include icons/arrow-left.svg %}Всички епизоди</a>{% endif %}</p>
 
   <article{% if ep.episode_type == "bonus" %} lang="en"{% endif %}>
     <header class="ep-head">

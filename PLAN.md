@@ -41,10 +41,19 @@ The site follows the **Знам.бе Design System** (claude.ai artifact „Зн
   - SiteHeader, the hero as a LessonPanel-style ink panel, and PodcastEpisodeCard.
   - A sticky PodcastPlayer (`_includes/player.html` + `assets/player.js`), with a no-JS fallback to the MP3 link and a native `<audio>`.
   - SiteFooter.
-- **Pages:**
-  - The homepage: the hero, then a sideways-scrolling Практики row, all episodes, the specials and the subscribe block.
-  - `/praktiki/`: all 70 Практика clips, linked from the menu.
-  - One page per episode.
+- **Pages:** each section has its own page, linked from the menu. The menu marks the current page, and episode pages count as Епизоди (or Специални for the bonus episodes).
+
+  | URL | What |
+  |---|---|
+  | `/` | Landing page: hero, the Практики row, the 6 latest episodes, and panels linking to Специални and Абонирай се |
+  | `/epizodi/` | All 85 episodes |
+  | `/praktiki/` | All 70 Практика clips |
+  | `/specialni/` | The 4 English bonus episodes |
+  | `/abonirai-se/` | The feed address with a copy button, and how to add it in Apple Podcasts, Pocket Casts, Overcast and AntennaPod |
+  | `/episodes/<slug>/` | One page per episode |
+- **Player:**
+  - Playback speed from 0.75× to 2×.
+  - The chosen speed is remembered per browser (`localStorage`) and applies to every episode.
 - **Accessibility (WCAG 2.2 AA per the system):**
   - a skip link and landmarks;
   - 3px focus rings, and 44px targets;

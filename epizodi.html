@@ -1,0 +1,22 @@
+---
+layout: default
+title: Епизоди
+permalink: /epizodi/
+nav: epizodi
+description: "Всички 85 епизода на подкаста „За Учителите“ — разговори с учители, които правят положителната промяна в училище."
+---
+{%- assign full = site.episodes | where: "episode_type", "full" | sort: "number" | reverse -%}
+
+<div class="wrap">
+  <section class="panel page-intro on-dark" aria-labelledby="page-title">
+    <p class="kicker">Подкаст „За Учителите“</p>
+    <h1 id="page-title">Епизоди</h1>
+    <p class="lead">{{ full.size }} разговора с учители от цялата страна — за това какво правят в часовете си и защо. Всеки епизод е дълъг около един учебен час.</p>
+  </section>
+
+  <section class="section section--tight" aria-label="Всички епизоди">
+    <ul class="cards">
+      {%- for ep in full %}{% include episode-card.html ep=ep %}{% endfor %}
+    </ul>
+  </section>
+</div>

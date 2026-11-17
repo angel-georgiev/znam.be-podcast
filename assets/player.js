@@ -11,6 +11,8 @@
   var cur = root.querySelector('[data-current]');
   var tot = root.querySelector('[data-total]');
   var seek = root.querySelector('[data-seek]');
+  var speed = root.querySelector('[data-speed]');
+  var SPEED_KEY = 'zu-speed';
   var current = null;
 
   function fmt(s) {
@@ -34,9 +36,24 @@
     });
   }
 
+  function applySpeed() {
+    var r = Number(speed.value) || 1;
+    audio.defaultPlaybackRate = r;
+    audio.playbackRate = r;
+  }
+  try {
+    var saved = localStorage.getItem(SPEED_KEY);
+    if (saved && speed.querySelector('option[value="' + saved + '"]')) speed.value = saved;
+  } catch (e) {}
+  speed.addEventListener('change', function () {
+    applySpeed();
+    try { localStorage.setItem(SPEED_KEY, speed.value); } catch (e) {}
+  });
+
   function load(item) {
     current = item;
     audio.src = item.src;
+    applySpeed();
     titleEl.textContent = item.title;
     titleEl.href = item.url || item.src;
     root.hidden = false;
@@ -81,6 +98,7 @@
     seek.style.setProperty('--pct', (audio.duration ? (audio.currentTime / audio.duration) * 100 : 0) + '%');
     seek.setAttribute('aria-valuetext', fmt(audio.currentTime) + ' от ' + fmt(audio.duration));
   });
+  audio.addEventListener('loadeddata', applySpeed);
   audio.addEventListener('play', syncButtons);
   audio.addEventListener('pause', syncButtons);
   audio.addEventListener('ended', syncButtons);
