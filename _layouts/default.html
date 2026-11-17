@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {%- assign show = site.data.show -%}
-  {%- if page.short_title %}{% assign page_title = page.short_title | append: " · " | append: show.title %}{% else %}{% assign page_title = show.title | append: " · подкаст на Знам.бе" %}{% endif %}
+  {%- if page.short_title %}{% assign page_title = page.short_title | append: " · " | append: show.title %}{% elsif page.title %}{% assign page_title = page.title | append: " · " | append: show.title %}{% else %}{% assign page_title = show.title | append: " · подкаст на Знам.бе" %}{% endif %}
   <title>{{ page_title | escape }}</title>
   {%- assign desc = page.description | default: show.description | strip_newlines | truncate: 200 %}
   <meta name="description" content="{{ desc | escape }}">
@@ -27,8 +27,8 @@
     <div class="wrap">
       <a class="logo" href="{{ '/' | relative_url }}"><img src="{{ '/assets/brand/owl-logo-horizontal.svg' | relative_url }}" alt="Знам.бе — За Учителите, начало" width="137" height="48"></a>
       <nav class="site-nav" aria-label="Основно меню">
-        <a href="{{ '/' | relative_url }}#praktiki">Практики</a>
-        <a href="{{ '/' | relative_url }}#epizodi">Епизоди</a>
+        <a href="{{ '/' | relative_url }}#epizodi"{% if page.url == "/" or page.collection == "episodes" %} aria-current="page"{% endif %}>Епизоди</a>
+        <a href="{{ '/praktiki/' | relative_url }}"{% if page.url == "/praktiki/" %} aria-current="page"{% endif %}>Практики</a>
         <a href="{{ '/' | relative_url }}#specialni">Специални</a>
         <a href="https://znam.be">Знам.бе</a>
       </nav>
@@ -51,6 +51,7 @@
           <h2>Подкастът</h2>
           <ul>
             <li><a href="{{ '/' | relative_url }}#epizodi">Всички епизоди</a></li>
+            <li><a href="{{ '/praktiki/' | relative_url }}">Практики</a></li>
             <li><a href="{{ '/' | relative_url }}#specialni">Специални епизоди</a></li>
             <li><a href="{{ '/feed.xml' | relative_url }}">RSS емисия</a></li>
           </ul>

@@ -144,7 +144,9 @@ p { margin: 0 0 var(--space-4); }
 .site-nav a:hover { border-bottom-color: var(--surface-deep); }
 .site-header .btn { margin-left: auto; }
 @media (max-width: 760px) {
-  .site-nav { display: none; }
+  .site-header .wrap { flex-wrap: wrap; row-gap: 0; }
+  .site-nav { order: 3; flex: 1 0 100%; gap: var(--space-4); overflow-x: auto; white-space: nowrap; }
+  .site-nav a { display: inline-flex; align-items: center; min-height: var(--touch-target); padding: 0; }
   .site-header .logo img { height: 40px; }
   .site-header .btn { padding: 0 var(--space-4); }
 }
@@ -172,8 +174,16 @@ p { margin: 0 0 var(--space-4); }
   .hero .owl { width: 160px; grid-row: 1; }
 }
 
+/* ---- page intro panel (sub-pages) ---- */
+.page-intro { margin-top: var(--space-4); }
+.page-intro .kicker { color: var(--accent-on-dark); font-weight: 700; margin: 0 0 var(--space-2); }
+.page-intro h1 { font-size: var(--fs-display); font-weight: 800; line-height: 1.1; margin-bottom: var(--space-4); }
+.page-intro .lead { max-width: 65ch; margin: 0; }
+@media (min-width: 900px) { .page-intro { padding: var(--space-12); } }
+
 /* ---- sections ---- */
 .section { margin-top: var(--space-18); }
+.section--tight { margin-top: var(--space-8); }
 .section-head { display: flex; align-items: baseline; gap: var(--space-3); margin-bottom: var(--space-6); }
 .section-head .count { color: var(--text-muted); font-size: var(--fs-small); font-weight: 600; }
 
@@ -208,12 +218,14 @@ p { margin: 0 0 var(--space-4); }
 .cards--row .card { width: 340px; scroll-snap-align: start; }
 @media (max-width: 480px) { .cards--row .card { width: 82vw; } }
 .card--practice h3 { flex: 1; }
+.section-head .see-all { margin-left: auto; min-height: var(--touch-target); font-size: var(--fs-small); }
+.section-head .see-all + .row-nav { margin-left: 0; }
 .section-head .row-nav { margin-left: auto; display: flex; gap: var(--space-2); }
 .row-nav[hidden] { display: none !important; }
 .row-nav .iconbtn { box-shadow: inset 0 0 0 2px var(--text-default); }
 .row-nav .iconbtn:hover { background: var(--surface-band); }
 .row-nav .iconbtn:disabled { opacity: .35; cursor: default; }
-@media (max-width: 640px) { .section-head .row-nav { display: none; } .section-head { flex-wrap: wrap; } }
+@media (max-width: 640px) { .section-head .row-nav { display: none; } .section-head { flex-wrap: wrap; } .section-head .see-all { margin-left: 0; padding-left: 0; } }
 
 /* ---- subscribe ---- */
 .subscribe { display: grid; gap: var(--space-4); }

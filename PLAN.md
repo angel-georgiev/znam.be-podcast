@@ -41,6 +41,10 @@ The site follows the **Знам.бе Design System** (claude.ai artifact „Зн
   - SiteHeader, the hero as a LessonPanel-style ink panel, and PodcastEpisodeCard.
   - A sticky PodcastPlayer (`_includes/player.html` + `assets/player.js`), with a no-JS fallback to the MP3 link and a native `<audio>`.
   - SiteFooter.
+- **Pages:**
+  - The homepage: the hero, then a sideways-scrolling Практики row, all episodes, the specials and the subscribe block.
+  - `/praktiki/`: all 70 Практика clips, linked from the menu.
+  - One page per episode.
 - **Accessibility (WCAG 2.2 AA per the system):**
   - a skip link and landmarks;
   - 3px focus rings, and 44px targets;

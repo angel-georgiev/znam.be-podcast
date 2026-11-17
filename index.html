@@ -33,6 +33,7 @@ layout: default
     <div class="section-head">
       <h2 id="practice-list-title">Практики</h2>
       <span class="count">{{ practice_count }} кратки идеи за класната стая</span>
+      <a class="btn btn--text see-all" href="{{ '/praktiki/' | relative_url }}">Виж всички{% include icons/arrow-right.svg %}</a>
       <div class="row-nav" hidden>
         <button class="iconbtn" type="button" data-row-scroll="-1" aria-controls="practice-row" aria-label="Предишни практики">{% include icons/arrow-left.svg %}</button>
         <button class="iconbtn" type="button" data-row-scroll="1" aria-controls="practice-row" aria-label="Следващи практики">{% include icons/arrow-right.svg %}</button>
