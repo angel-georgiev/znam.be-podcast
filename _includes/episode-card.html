@@ -1,0 +1,14 @@
+{%- assign ep = include.ep -%}
+<li class="card"{% if ep.episode_type == "bonus" %} lang="en"{% endif %}>
+  <img class="art" src="{{ ep.image | default: site.cover | relative_url }}" alt="" width="104" height="104" loading="lazy">
+  <div class="body">
+    <div class="tags" lang="bg">
+      {%- if ep.number %}<span class="tag tag--dark">Епизод #{{ ep.number }}</span>{% elsif ep.episode_type == "bonus" %}<span class="tag tag--dark">Специален · EN</span>{% endif %}
+      <span class="tag">{% include icons/clock.svg %}{{ ep.duration_label }}</span>
+      {%- if ep.practice %}<span class="tag">+ Практика</span>{% endif %}
+    </div>
+    <h3><a href="{{ ep.url | relative_url }}">{{ ep.short_title }}</a></h3>
+    <p class="meta" lang="bg">{{ ep.date | date: "%d.%m.%Y" }}</p>
+    <span lang="bg">{% include play-button.html item=ep page_url=ep.url art=ep.image cls="btn--secondary" sr=ep.short_title %}</span>
+  </div>
+</li>

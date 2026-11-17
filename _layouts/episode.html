@@ -2,47 +2,59 @@
 layout: default
 ---
 {%- assign ep = page -%}
-<article class="episode">
-  <div class="episode-head">
-    <img class="art" src="{{ ep.image | default: site.cover | relative_url }}" alt="" width="320" height="320">
-    <div>
-      <p class="row-meta">
-        {%- if ep.number %}Епизод #{{ ep.number }} · {% elsif ep.episode_type == "bonus" %}Специален епизод · {% elsif ep.episode_type == "trailer" %}Трейлър · {% endif -%}
-        {{ ep.date | date: "%d.%m.%Y" }} · {{ ep.duration_label }}
-      </p>
-      <h1>{{ ep.short_title }}</h1>
-      <audio controls preload="none" src="{{ site.media_base }}{{ ep.audio_file }}"></audio>
-      <p class="download"><a href="{{ site.media_base }}{{ ep.audio_file }}" download>Изтегли MP3</a></p>
-    </div>
-  </div>
+<div class="wrap">
+  <p class="crumbs"><a href="{{ '/' | relative_url }}#epizodi">{% include icons/arrow-left.svg %}Всички епизоди</a></p>
 
-  <div class="notes">
-    {{ content }}
-  </div>
+  <article{% if ep.episode_type == "bonus" %} lang="en"{% endif %}>
+    <header class="ep-head">
+      <img class="art" src="{{ ep.image | default: site.cover | relative_url }}" alt="" width="320" height="320">
+      <div>
+        <div class="tags" lang="bg">
+          {%- if ep.number %}<span class="tag tag--dark">Епизод #{{ ep.number }}</span>{% elsif ep.episode_type == "bonus" %}<span class="tag tag--dark">Специален · EN</span>{% elsif ep.episode_type == "trailer" %}<span class="tag tag--dark">Представяне</span>{% endif %}
+          <span class="tag">{% include icons/clock.svg %}{{ ep.duration_label }}</span>
+          <span class="tag">{{ ep.date | date: "%d.%m.%Y" }}</span>
+        </div>
+        <h1>{{ ep.short_title }}</h1>
+        <div class="actions" lang="bg">
+          {% include play-button.html item=ep page_url=ep.url art=ep.image label="Слушай епизода" %}
+          <a class="btn btn--text" href="{{ site.media_base }}{{ ep.audio_file }}" download>{% include icons/download.svg %}Изтегли MP3</a>
+        </div>
+        <noscript><audio controls preload="none" src="{{ site.media_base }}{{ ep.audio_file }}" style="width:100%;margin-top:16px"></audio></noscript>
+      </div>
+    </header>
+
+    <div class="notes">
+      {{ content }}
+    </div>
+  </article>
 
   {%- if ep.practice %}
   {%- assign pr = ep.practice %}
-  <section class="practice">
-    <h2>Практика</h2>
-    <p class="row-meta">{{ pr.duration_label }}</p>
-    <h3>{{ pr.short_title }}</h3>
-    <audio controls preload="none" src="{{ site.media_base }}{{ pr.audio_file }}"></audio>
-    <div class="notes">{{ pr.description_html }}</div>
+  <section class="panel practice on-dark" aria-labelledby="practice-title">
+    <img class="art" src="{{ pr.image | default: ep.image | relative_url }}" alt="" width="160" height="160" loading="lazy">
+    <div>
+      <h2>Практика</h2>
+      <h3 id="practice-title">{{ pr.short_title }}</h3>
+      <div class="tags" style="margin-bottom: var(--space-4)"><span class="tag tag--dark">{% include icons/clock.svg %}{{ pr.duration_label }}</span></div>
+      {% include play-button.html item=pr page_url=ep.url art=pr.image cls="btn--secondary" label="Слушай практиката" %}
+      <noscript><audio controls preload="none" src="{{ site.media_base }}{{ pr.audio_file }}" style="width:100%;margin-top:16px"></audio></noscript>
+      <div class="notes">{{ pr.description_html }}</div>
+    </div>
   </section>
   {%- endif %}
 
   {%- if ep.number %}
   {%- assign full = site.episodes | where: "episode_type", "full" | sort: "number" %}
-  <nav class="prev-next">
-    {%- for e in full %}
-      {%- if e.number == ep.number %}
-        {%- assign i = forloop.index0 %}
-        {%- if i > 0 %}{% assign pi = i | minus: 1 %}{% assign prv = full[pi] %}{% endif %}
-        {%- assign ni = i | plus: 1 %}{% assign nxt = full[ni] %}
-      {%- endif %}
-    {%- endfor %}
-    {%- if prv %}<a class="prev" href="{{ prv.url | relative_url }}">← #{{ prv.number }} {{ prv.short_title }}</a>{% else %}<span></span>{% endif %}
-    {%- if nxt %}<a class="next" href="{{ nxt.url | relative_url }}">#{{ nxt.number }} {{ nxt.short_title }} →</a>{% endif %}
+  {%- for e in full %}
+    {%- if e.number == ep.number %}
+      {%- assign i = forloop.index0 %}
+      {%- if i > 0 %}{% assign pi = i | minus: 1 %}{% assign prv = full[pi] %}{% endif %}
+      {%- assign ni = i | plus: 1 %}{% assign nxt = full[ni] %}
+    {%- endif %}
+  {%- endfor %}
+  <nav class="prev-next" aria-label="Съседни епизоди">
+    {%- if prv %}<a class="prev" href="{{ prv.url | relative_url }}">{% include icons/arrow-left.svg %}<span>#{{ prv.number }} {{ prv.short_title }}</span></a>{% endif %}
+    {%- if nxt %}<a class="next" href="{{ nxt.url | relative_url }}"><span>#{{ nxt.number }} {{ nxt.short_title }}</span>{% include icons/arrow-right.svg %}</a>{% endif %}
   </nav>
   {%- endif %}
-</article>
+</div>

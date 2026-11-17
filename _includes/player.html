@@ -1,0 +1,14 @@
+<section class="player" id="player" aria-label="Подкаст плейър" hidden>
+  <div class="wrap">
+    <button class="iconbtn skip" type="button" data-skip="-15" aria-label="Назад 15 секунди">{% include icons/rotate-left.svg %}</button>
+    <button class="iconbtn iconbtn--filled" type="button" data-toggle aria-label="Пусни">
+      <span data-icon-play>{% include icons/play.svg %}</span><span data-icon-pause hidden>{% include icons/pause.svg %}</span>
+    </button>
+    <button class="iconbtn skip" type="button" data-skip="15" aria-label="Напред 15 секунди">{% include icons/rotate-right.svg %}</button>
+    <div class="title"><a data-title href="#"></a></div>
+    <time data-current>0:00</time>
+    <input type="range" min="0" max="0" step="1" value="0" data-seek aria-label="Позиция в епизода">
+    <time data-total>0:00</time>
+  </div>
+  <audio preload="none" data-audio></audio>
+</section>
