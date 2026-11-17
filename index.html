@@ -29,6 +29,22 @@ layout: default
     <div class="owl"><img src="{{ '/assets/brand/owl-headphones.png' | relative_url }}" alt="" width="600" height="703"></div>
   </section>
 
+  <section class="section" id="praktiki" aria-labelledby="practice-list-title">
+    <div class="section-head">
+      <h2 id="practice-list-title">Практики</h2>
+      <span class="count">{{ practice_count }} кратки идеи за класната стая</span>
+      <div class="row-nav" hidden>
+        <button class="iconbtn" type="button" data-row-scroll="-1" aria-controls="practice-row" aria-label="Предишни практики">{% include icons/arrow-left.svg %}</button>
+        <button class="iconbtn" type="button" data-row-scroll="1" aria-controls="practice-row" aria-label="Следващи практики">{% include icons/arrow-right.svg %}</button>
+      </div>
+    </div>
+    <div class="scroller" id="practice-row" role="region" aria-labelledby="practice-list-title" tabindex="0">
+      <ul class="cards cards--row">
+        {%- for ep in full %}{% if ep.practice %}{% include practice-card.html ep=ep %}{% endif %}{% endfor %}
+      </ul>
+    </div>
+  </section>
+
   <section class="section" id="epizodi" aria-labelledby="all-title">
     <div class="section-head">
       <h2 id="all-title">Всички епизоди</h2>

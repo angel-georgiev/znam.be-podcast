@@ -30,7 +30,7 @@ layout: default
 
   {%- if ep.practice %}
   {%- assign pr = ep.practice %}
-  <section class="panel practice on-dark" aria-labelledby="practice-title">
+  <section class="panel practice on-dark" id="praktika" aria-labelledby="practice-title">
     <img class="art" src="{{ pr.image | default: ep.image | relative_url }}" alt="" width="160" height="160" loading="lazy">
     <div>
       <h2>Практика</h2>

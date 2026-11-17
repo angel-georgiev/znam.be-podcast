@@ -90,6 +90,24 @@
     navigator.mediaSession.setActionHandler('seekforward', function () { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 15); });
   }
 
+  /* Arrow buttons for horizontal rows */
+  document.querySelectorAll('.row-nav').forEach(function (nav) {
+    var row = document.getElementById(nav.querySelector('[aria-controls]').getAttribute('aria-controls'));
+    var btns = nav.querySelectorAll('[data-row-scroll]');
+    function update() {
+      btns[0].disabled = row.scrollLeft <= 2;
+      btns[1].disabled = row.scrollLeft + row.clientWidth >= row.scrollWidth - 2;
+    }
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        row.scrollBy({ left: Number(b.getAttribute('data-row-scroll')) * row.clientWidth * 0.8, behavior: 'smooth' });
+      });
+    });
+    row.addEventListener('scroll', update, { passive: true });
+    nav.hidden = false;
+    update();
+  });
+
   /* Copy-the-feed buttons */
   document.querySelectorAll('[data-copy]').forEach(function (b) {
     b.addEventListener('click', function () {

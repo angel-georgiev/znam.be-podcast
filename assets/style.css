@@ -196,6 +196,25 @@ p { margin: 0 0 var(--space-4); }
 .card .btn { position: relative; z-index: 1; align-self: flex-start; min-height: var(--touch-target); padding: 0 var(--space-4); font-size: var(--fs-small); }
 @media (max-width: 480px) { .card .art { width: 72px; height: 72px; } }
 
+/* ---- practices row (horizontal scroll) ---- */
+.scroller {
+  overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+  margin: 0 calc(-1 * var(--space-4)); padding: var(--space-1) var(--space-4) var(--space-4);
+  scrollbar-color: var(--surface-deep) transparent; scroll-padding-inline: var(--space-4);
+}
+@media (min-width: 700px) { .scroller { margin: 0 calc(-1 * var(--space-8)); padding-left: var(--space-8); padding-right: var(--space-8); scroll-padding-inline: var(--space-8); } }
+.scroller:focus-visible { outline-offset: -3px; border-radius: var(--radius-md); }
+.cards--row { display: flex; gap: var(--space-4); width: max-content; }
+.cards--row .card { width: 340px; scroll-snap-align: start; }
+@media (max-width: 480px) { .cards--row .card { width: 82vw; } }
+.card--practice h3 { flex: 1; }
+.section-head .row-nav { margin-left: auto; display: flex; gap: var(--space-2); }
+.row-nav[hidden] { display: none !important; }
+.row-nav .iconbtn { box-shadow: inset 0 0 0 2px var(--text-default); }
+.row-nav .iconbtn:hover { background: var(--surface-band); }
+.row-nav .iconbtn:disabled { opacity: .35; cursor: default; }
+@media (max-width: 640px) { .section-head .row-nav { display: none; } .section-head { flex-wrap: wrap; } }
+
 /* ---- subscribe ---- */
 .subscribe { display: grid; gap: var(--space-4); }
 .subscribe .feed-url {
